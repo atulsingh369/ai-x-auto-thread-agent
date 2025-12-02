@@ -20,13 +20,13 @@ Designed for founders, creators, and growth teams to automate personal branding 
 ## 🚀 Overview
 
 This workflow automatically:
-• Generates a storytelling-style X thread (Twitter) using RAG context
-• Pulls semantic memory from Pinecone across style, strategy & personal story namespaces
-• Uses multi-model reasoning with OpenAI + fallback routing
-• Calls research tools (Brave, SerpAPI) for real-world references
-• Publishes the full thread automatically with reply chaining
-• Maintains thread state across runs using thread IDs
-• Handles auto-continue + closure logic
+• Generates a storytelling-style X thread (Twitter) using RAG context  
+• Pulls semantic memory from Pinecone across style, strategy & personal story namespaces  
+• Uses multi-model reasoning with OpenAI + fallback routing  
+• Calls research tools (Brave, SerpAPI) for real-world references  
+• Publishes the full thread automatically with reply chaining  
+• Maintains thread state across runs using thread IDs  
+• Handles auto-continue + closure logic  
 
 This system turns creative ideation → publishing pipeline into a completely automated execution loop.
 
@@ -77,10 +77,10 @@ Core Components:
 
 ## 📊 Results & Impact
 
-• Replaces manual writing + posting effort
-• Automates daily thread creation with real narrative depth
-• Consistency without burnout
-• Raw emotional storytelling → higher engagement vs generic AI posts
+• Replaces manual writing + posting effort  
+• Automates daily thread creation with real narrative depth  
+• Consistency without burnout  
+• Raw emotional storytelling → higher engagement vs generic AI posts  
 
 ---
 
@@ -132,7 +132,7 @@ DM or open an issue if you're building something similar.
 **Built by:** Atul Singh — AI Automation Architect  
 📧 Email: atulsingh.0369@gmail.com  
 🔗 LinkedIn: https://linkedin.com/in/atulsingh369  
-🔗 [Visit my Portfolio](https://atulsingh369.netlify.app)
+🔗 [Visit my Portfolio](https://atulsingh369.netlify.app)  
 
 ---
 
