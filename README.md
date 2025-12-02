@@ -87,11 +87,14 @@ Core Components:
 ## 📂 Repo Structure
 
 ```
-ai-x-auto-posting-agent/
+ai-x-auto-thread-agent/
 │── export.json
 │── featured-assets/
 │   └── architecture.png
-│   └── screenshot.png
+│   └── screenshot0.png
+│   └── screenshot1.png
+│   └── screenshot2.png
+│   └── screenshot3.png
 │── README.md
 │── LICENSE
 ```
@@ -100,24 +103,20 @@ ai-x-auto-posting-agent/
 
 ## 📸 Workflow Preview (Live System Screenshot)
 
-<div style="display: flex; justify-content: space-evenly; item-align: center; flex-wrap: wrap;">
-<img src="featured-assets/screenshot0.png" width="450" alt="Screenshot 0" />
-<img src="featured-assets/screenshot1.png" width="450" alt="Screenshot 1" />
-<img src="featured-assets/screenshot2.png" width="600" alt="Screenshot 2" />
-<img src="featured-assets/screenshot3.png" width="300" alt="Screenshot 3" />
-<img src="featured-assets/screenshot4.png" width="300" alt="Screenshot 4" />
-<img src="featured-assets/screenshot5.png" width="600" alt="Screenshot 5" />
-<img src="featured-assets/screenshot6.png" width="900" height="500" alt="Screenshot 6" />
-</div>
+| | |
+|---|---|
+| <img src="featured-assets/screenshot0.png" width="300"/> | <img src="featured-assets/screenshot1.png" width="300"/> |
+| <img src="featured-assets/screenshot2.png" width="300"/> | <img src="featured-assets/screenshot3.png" width="300"/> |
+
 
 ---
 
 ## 🧪 Future Enhancements
 
-• Auto-threading and multi-platform fan-out (X, Threads, Reddit)  
-• Performance feedback loop using analytics scoring  
-• Reinforcement learning reward model for engagement patterns  
-• Custom per-persona brand memory uploading UI
+• Video and carousel support for X
+• Multi-platform cross-posting (LinkedIn + Threads + Reddit)
+• Engagement scoring feedback loop
+• Auto-respond via AI commenting agent
 
 ---
 
@@ -139,7 +138,7 @@ DM or open an issue if you're building something similar.
 
 ## 📄 License
 
-This project is licensed under the Apache License 2.0. See [LICENSE](https://github.com/atulsingh369/ai-linkedin-auto-posting-agent?tab=Apache-2.0-1-ov-file) for details.
+This project is licensed under the Apache License 2.0. See [LICENSE](https://github.com/atulsingh369/ai-x-auto-thread-agent?tab=Apache-2.0-1-ov-file) for details.
 
 ---
 

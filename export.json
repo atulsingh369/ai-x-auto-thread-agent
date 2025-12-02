@@ -1,0 +1,962 @@
+{
+  "name": "X PostGen Agent",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [384, 2688],
+      "id": "7451ab8c-c00c-46c1-9034-10199146fb33",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "model": "text-embedding-3-large",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [1040, 3792],
+      "id": "d8ea146e-8892-4b3b-aec5-6dac4ed97614",
+      "name": "Embeddings OpenAI"
+    },
+    {
+      "parameters": {
+        "jsonMode": "expressionData",
+        "jsonData": "={{ JSON.stringify($('SET Data').item.json.data) }}",
+        "options": {
+          "metadata": {
+            "metadataValues": [
+              {
+                "name": "id",
+                "value": "={{ $('SET Data').item.json.id }}"
+              },
+              {
+                "name": "doc_type",
+                "value": "={{ $('SET Data').item.json.type }}"
+              },
+              {
+                "name": "category",
+                "value": "={{ $('SET Data').item.json.category }}"
+              },
+              {
+                "name": "version",
+                "value": "v1"
+              }
+            ]
+          }
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [864, 3792],
+      "id": "ac795559-4eec-449c-b061-c5ea8edd4e60",
+      "name": "Default Data Loader"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Write a multi-part X (Twitter) thread on the topic:\n{{ $json.topic }}\n\nUse Pinecone RAG context as the primary reference for identity, voice laws, narrative structure, content pillars, brand positioning, style examples, and personal stories.\n\nUse these Pinecone namespaces and doc_types explicitly when retrieving RAG:\n• namespace \"devstudios_style_examples\" → doc_type = \"style_reference\" (for pacing, phrasing, and narrative feel)\n• namespace \"devstudios_strategy\" → doc_type in [\"voice_laws\",\"brand\",\"post_structure\",\"identity\",\"content_pillars\",\"positioning\",\"ICP\"]\n• namespace \"devstudios_stories\" → doc_type = \"story\" (real personal experiences)\n\nThread structure rules:\n• Tweet 1: Emotional hook + tension\n• Tweet 2: Context setup\n• Tweet 3: Personal struggle or conflict\n• Tweet 4: Breakdown moment or internal battle\n• Tweet 5: Breakthrough or change\n• Tweet 6: Insight + value with brutal honesty\n• Tweet 7: CTA question to spark replies\n\nVoice:\nRaw. Direct. Scarred. Engineering realism.\nOne-man army tone with emotional depth and subtle sarcasm.\nMix short punchy lines with a few flowing sentences.\nHuman: internal thoughts, rhetorical questions, slight humor.\nDo not sound robotic or like an AI narrator.\n\nHuman realism rules:\n• Subtle dry humor allowed when natural\n• Conversational pivots (e.g., “And yeah…”, “Funny thing,”, \"And the Fun fact is..\",  etc.)\n• 1–2 expressive emojis allowed 😅 😭 🤌 😁\n• No '—' character anywhere\n• Never imply a team. Always “I”\n• Do not lecture or preach. Speak from lived scars.\n• Reference DevStudios only when relevant & naturally integrated\n\nReturn ONLY this JSON format:\n{\n  \"threads\": [\n     \"tweet 1\",\n     \"tweet 2\",\n     \"tweet 3\",\n     \"tweet 4\",\n     \"tweet 5\",\n     \"tweet 6\",\n     \"tweet 7\"\n  ]\n}\n\nNo hashtags in the thread.\nNo images.\nNo markdown.\nNo explanation.\nNo commentary.\nStrictly, No ‘—’ character anywhere.\n",
+        "needsFallback": true,
+        "options": {
+          "systemMessage": "=DevStudios is a solo founder-led studio built and operated by Atul Singh.\nNo team. No co-founders. No fake scaling.\nJust engineering discipline, automation frameworks, and scars from building alone.\n\nWrite only in first-person perspective (\"I\").\nTone: lone-wolf builder, gritty realism, slight sarcasm, emotionally honest and imperfect.\nNot overly dark. Not overly motivational. Balanced.\n\nContent must feel written by a human founder, not AI.\nBreak rhythm. Add micro-pauses. Embrace imperfection.\nSpeak as if talking to a friend at 3AM while debugging.\n\nAlways enforce DevStudios Voice Laws:\n- First-person single founder perspective only\n- Real scars, real lessons, engineering realism\n- Short punchy sentences\n- No corporate tone, no inspirational speeches\n- Conflict → struggle → breakthrough → insight\n- Subtle humor allowed, sarcasm allowed\n- No '—' character anywhere\n- Reference DevStudios only when contextually natural\n\nFocus on:\n\n- discipline, automation, scars, breakthroughs\n- DevStudios identity, lone wolf execution\n- emotional truth, not fiction\n\nPull RAG context from Pinecone using:\n• namespace \"devstudios_style_examples\" / doc_type \"style_reference\"\n• namespace \"devstudios_strategy\" / doc_types [\"voice_laws\",\"brand\",\"post_structure\",\"identity\",\"content_pillars\",\"positioning\",\"ICP\"]\n• namespace \"devstudios_stories\" / doc_type \"story\"\n\nIf RAG content is insufficient, call external research tools. Never fabricate.\n\nOutput is a THREAD for X (Twitter), formatted as JSON:\n{\n  \"threads\": [\n     \"first tweet ≤ 280 chars\",\n     \"second tweet ≤ 280 chars\",\n     \"third tweet ≤ 280 chars\"\n  ]\n}\n\nEach tweet must stand alone with its own micro-hook.\n\nReturn only the required JSON thread format. Nothing else."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [832, 2688],
+      "id": "7e789dfd-2e8a-4214-a883-3e8c50071916",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "topN": 2
+      },
+      "type": "@n8n/n8n-nodes-langchain.rerankerCohere",
+      "typeVersion": 1,
+      "position": [1216, 3792],
+      "id": "15ea8f92-e1d0-49d9-a47a-ebd19d8df480",
+      "name": "Reranker Cohere"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ff26980b-75f8-4f75-b8c3-e2e65f9ea644",
+              "name": "data",
+              "value": "={\n  \"id\": \"devstudios_voice_laws\",\n  \"type\": \"voice_laws\",\n  \"category\": \"brand\",\n  \"laws\": [\n    \"Always write in first-person. Use 'I', never 'we'.\",\n    \"DevStudios is a one-man execution unit powered by AI agents—not a team of humans.\",\n    \"The tone is raw, ultra-honest, scarred, battle-tested.\",\n    \"Always reveal emotional stakes and internal conflict before resolution.\",\n    \"Show real struggle and pressure instead of celebrating wins outright.\",\n    \"Short punchy sentences. 1–2 lines per paragraph max.\",\n    \"No motivational speaker tone. No corporate fluff. No clichés.\",\n    \"No emojis except sparingly for emphasis (never more than one in a post).\",\n    \"Story first. Lesson second. Opinion third.\",\n    \"No telling the audience what to think—make them feel it.\",\n    \"Use concrete examples, not abstractions or generic advice.\"\n  ],\n  \"identity_enforcement\": \"Make the reader feel like they are inside the room during the struggle. Use sensory detail, tension, silence, uncertainty, and real stakes.\"\n}",
+              "type": "object"
+            },
+            {
+              "id": "119ea52a-65b4-485f-8e6b-d7365c6548c8",
+              "name": "id",
+              "value": "devstudios_voice_laws",
+              "type": "string"
+            },
+            {
+              "id": "d5f19b11-0f13-4ed4-94e3-2e8a72d2ee6f",
+              "name": "type",
+              "value": "voice_laws",
+              "type": "string"
+            },
+            {
+              "id": "44aabe46-9458-4e5f-8f47-9e4ae6845761",
+              "name": "category",
+              "value": "brand",
+              "type": "string"
+            },
+            {
+              "id": "83c7fc38-c46d-4233-bcb2-4776465d5a9f",
+              "name": "namespace",
+              "value": "devstudios_strategy",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [768, 4064],
+      "id": "372181f1-263d-4c84-a2b5-f7ba160441b3",
+      "name": "SET Data"
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "=Use this tool to retrieve DevStudios style examples: annotated LinkedIn posts and style patterns.\n\nNamespace: \"devstudios_style_examples\"\ndoc_type:\n- \"style_reference\"   → hook style, tone, pacing, paragraph rhythm, CTA patterns",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "devstudios-rag",
+          "mode": "list",
+          "cachedResultName": "devstudios-rag"
+        },
+        "topK": 10,
+        "useReranker": true,
+        "options": {
+          "pineconeNamespace": "devstudios_style_examples"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [1024, 3504],
+      "id": "6736a02f-85fd-44c8-a174-5d748743e58e",
+      "name": "Retrieve Style"
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "=Use this tool to retrieve DevStudios strategy, ICP, brand, narrative structure, and voice rules.\n\nNamespace: \"devstudios_strategy\"\nRelevant doc_type values:\n- \"voice_laws\"        → DevStudios writing laws and tone\n- \"brand\"             → brand identity, tagline, positioning\n- \"post_structure\"    → HOOK → CONTEXT → STORY → BREAKTHROUGH → INSIGHT → VALUE → CTA\n- \"identity\"          → DevStudios identity and lone-wolf founder framing\n- \"content_pillars\"   → main content categories and themes\n- \"positioning\"       → how DevStudios is framed in the market\n- \"ICP\"               → who DevStudios serves and their pain points",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "devstudios-rag",
+          "mode": "list",
+          "cachedResultName": "devstudios-rag"
+        },
+        "topK": 10,
+        "useReranker": true,
+        "options": {
+          "pineconeNamespace": "devstudios_strategy"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [720, 3504],
+      "id": "92e1ab90-2369-4e17-a590-674229be51fe",
+      "name": "Retrieve Strategy"
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "=Use this tool to retrieve real DevStudios stories: personal journey and project case studies.\n\nNamespace: \"devstudios_stories\"\ndoc_type:\n- \"story\"             → failures, near-misses, breakthroughs, internal conflict, lessons",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "devstudios-rag",
+          "mode": "list",
+          "cachedResultName": "devstudios-rag"
+        },
+        "topK": 10,
+        "useReranker": true,
+        "options": {
+          "pineconeNamespace": "devstudios_stories"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [1328, 3504],
+      "id": "e3a69128-fc8f-4b60-aa70-3e6e8139ba9c",
+      "name": "Retrieve Stories"
+    },
+    {
+      "parameters": {
+        "content": "## RAG (Retrieval)",
+        "height": 240,
+        "width": 944,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [672, 3424],
+      "id": "09eae022-400f-45cf-8c08-9f296d3779c8",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "### Embeddings and other tools for RAG",
+        "height": 224,
+        "width": 1184,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [480, 3728],
+      "id": "b40c0615-9c55-4ad6-9e83-f423ee1964da",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## RAG (Send to DB)",
+        "height": 240,
+        "width": 944,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [640, 4000],
+      "id": "daaf4c56-9d1c-4a83-ae3a-3146b2be98d2",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "devstudios-rag",
+          "mode": "list",
+          "cachedResultName": "devstudios-rag"
+        },
+        "embeddingBatchSize": 500,
+        "options": {
+          "pineconeNamespace": "={{ $json.namespace }}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [960, 4064],
+      "id": "9d90c7d0-01ba-4109-87ed-25e31a172518",
+      "name": "Insert Document"
+    },
+    {
+      "parameters": {
+        "jsCode": "// n8n Code Node\nconst raw = $input.first().json.output;\n\nlet parsed;\ntry {\n  parsed = JSON.parse(raw);\n} catch (e) {\n  throw new Error(\"Failed to parse threads JSON: \" + e.message);\n}\n\nconst threads = Array.isArray(parsed.threads) ? parsed.threads : [];\n\n// Return array of objects, one per tweet\nreturn threads.map(line => ({\n  json: {\n    tweet: line.trim()\n  }\n}));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1120, 2688],
+      "id": "ba574f60-0829-40ef-8053-d9202bb71496",
+      "name": "Parser"
+    },
+    {
+      "parameters": {
+        "options": {
+          "gl": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Country', ``, 'string') }}",
+          "device": "desktop",
+          "no_cache": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Explicit_Array', ``, 'boolean') }}",
+          "google_domain": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Google_Domain', ``, 'string') }}",
+          "hl": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Language', ``, 'string') }}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolSerpApi",
+      "typeVersion": 1,
+      "position": [1360, 3792],
+      "id": "47ec0716-70e9-46d2-9959-4bd20f45453e",
+      "name": "SerpAPI"
+    },
+    {
+      "parameters": {
+        "query": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Query', ``, 'string') }}",
+        "count": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Count', ``, 'number') }}",
+        "additionalParameters": {}
+      },
+      "type": "@brave/n8n-nodes-brave-search.braveSearchTool",
+      "typeVersion": 1,
+      "position": [688, 3792],
+      "id": "6a31fded-e72f-420a-abe8-018dc7d6410a",
+      "name": "Brave Web Search"
+    },
+    {
+      "parameters": {
+        "operation": "news",
+        "query": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Query', ``, 'string') }}",
+        "count": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Count', ``, 'number') }}",
+        "additionalParameters": {}
+      },
+      "type": "@brave/n8n-nodes-brave-search.braveSearchTool",
+      "typeVersion": 1,
+      "position": [1504, 3792],
+      "id": "f4fc8f2d-2d4d-498b-8222-51bc607715ae",
+      "name": "Brave News Search"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [704, 2864],
+      "id": "a102bb46-be32-474a-9051-69ead74cc61a",
+      "name": "OpenAI Main Model"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [864, 2864],
+      "id": "0cd42d32-5a45-49f8-96db-572b3a2f8f9c",
+      "name": "OpenAI Fallback Model"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "023c2c0e-ab57-4504-99b4-a26ac2a66e4c",
+              "name": "topic",
+              "value": "How I learned to survive without mentorship",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [592, 2688],
+      "id": "d20ab63b-6b09-42bf-bebd-52593246b316",
+      "name": "Set topic"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [1296, 2688],
+      "id": "fa775193-a853-450f-8f39-c54fd902ff1b",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineAll",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [1728, 2688],
+      "id": "9639f9bd-07d3-466b-8785-639a56954d2b",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "4efa6b14-13e3-46a5-b975-d3fb93fa6d78",
+              "leftValue": "={{ $json.Tweet_ID }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [1312, 2896],
+      "id": "ac24bb2c-4b33-418d-948a-89c57302a322",
+      "name": "Checking if thread exist"
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.tweet }}",
+        "additionalFields": {
+          "inReplyToStatusId": {
+            "__rl": true,
+            "mode": "id",
+            "value": "={{ $json.Tweet_ID }}"
+          }
+        }
+      },
+      "type": "n8n-nodes-base.twitter",
+      "typeVersion": 2,
+      "position": [1568, 2880],
+      "id": "1676c80a-d607-4a0d-8d84-7f9d49e5b0f6",
+      "name": "Reply Tweet"
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.tweet }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.twitter",
+      "typeVersion": 2,
+      "position": [1568, 3072],
+      "id": "62c6457f-a33c-44ed-b0e0-bb7b072e7809",
+      "name": "Create Tweet"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "40FKGAclwglSlX4K",
+          "mode": "list",
+          "cachedResultName": "Twitter(X) ID",
+          "cachedResultUrl": "/projects/DC9rWymgxTlz1N8s/datatables/40FKGAclwglSlX4K"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "isClosed",
+              "condition": "isFalse"
+            }
+          ]
+        },
+        "limit": 1
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [1520, 2592],
+      "id": "545a73ed-d85e-4a03-bdf6-658168c6dd6b",
+      "name": "Get Thread ID",
+      "executeOnce": true,
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "value": "40FKGAclwglSlX4K",
+          "mode": "list",
+          "cachedResultName": "Twitter(X) ID",
+          "cachedResultUrl": "/projects/DC9rWymgxTlz1N8s/datatables/40FKGAclwglSlX4K"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "isClosed",
+              "condition": "isFalse"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "isClosed": true
+          },
+          "matchingColumns": ["Tweet_ID"],
+          "schema": [
+            {
+              "id": "Tweet_ID",
+              "displayName": "Tweet_ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "isClosed",
+              "displayName": "isClosed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [1520, 2416],
+      "id": "a763eea5-6fdc-4fbc-a2e0-73856c6771c5",
+      "name": "Closing Thread"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "value": "40FKGAclwglSlX4K",
+          "mode": "list",
+          "cachedResultName": "Twitter(X) ID",
+          "cachedResultUrl": "/projects/DC9rWymgxTlz1N8s/datatables/40FKGAclwglSlX4K"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "isClosed",
+              "condition": "isTrue"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Tweet_ID": "={{ $json.id }}",
+            "isClosed": false
+          },
+          "matchingColumns": ["Tweet_ID"],
+          "schema": [
+            {
+              "id": "Tweet_ID",
+              "displayName": "Tweet_ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "isClosed",
+              "displayName": "isClosed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [1744, 3072],
+      "id": "ef9710a0-b75b-40e1-9a6d-dec013826c2d",
+      "name": "Update Closed ThreadID"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "value": "40FKGAclwglSlX4K",
+          "mode": "list",
+          "cachedResultName": "Twitter(X) ID",
+          "cachedResultUrl": "/projects/DC9rWymgxTlz1N8s/datatables/40FKGAclwglSlX4K"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "isClosed",
+              "condition": "isFalse"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Tweet_ID": "={{ $json.id }}"
+          },
+          "matchingColumns": ["Tweet_ID"],
+          "schema": [
+            {
+              "id": "Tweet_ID",
+              "displayName": "Tweet_ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "isClosed",
+              "displayName": "isClosed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [1744, 2880],
+      "id": "4c7cae65-71c6-46e3-9f68-163cc9aa351b",
+      "name": "Update Opened ThreadID"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Set topic",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Retrieve Strategy",
+            "type": "ai_embedding",
+            "index": 0
+          },
+          {
+            "node": "Insert Document",
+            "type": "ai_embedding",
+            "index": 0
+          },
+          {
+            "node": "Retrieve Style",
+            "type": "ai_embedding",
+            "index": 0
+          },
+          {
+            "node": "Retrieve Stories",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Insert Document",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Parser",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reranker Cohere": {
+      "ai_reranker": [
+        [
+          {
+            "node": "Retrieve Strategy",
+            "type": "ai_reranker",
+            "index": 0
+          },
+          {
+            "node": "Retrieve Style",
+            "type": "ai_reranker",
+            "index": 0
+          },
+          {
+            "node": "Retrieve Stories",
+            "type": "ai_reranker",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SET Data": {
+      "main": [
+        [
+          {
+            "node": "Insert Document",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Retrieve Style": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Retrieve Strategy": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Retrieve Stories": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parser": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Brave Web Search": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Brave News Search": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Main Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Fallback Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Set topic": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "Closing Thread",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get Thread ID",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Checking if thread exist",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Checking if thread exist": {
+      "main": [
+        [
+          {
+            "node": "Reply Tweet",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Create Tweet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reply Tweet": {
+      "main": [
+        [
+          {
+            "node": "Update Opened ThreadID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Tweet": {
+      "main": [
+        [
+          {
+            "node": "Update Closed ThreadID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Thread ID": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Closed ThreadID": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Opened ThreadID": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "2dc3e0e1-d08b-417e-a3e1-25903e8912f1",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "c33ae80582838b3b98442df90461b31a6c5c881372c4412924f512290076ba6c"
+  },
+  "id": "ZA844FfJl77aItfS",
+  "tags": []
+}
