@@ -54,7 +54,7 @@ Core Components:
 • n8n (workflow orchestration & agent framework)  
 • OpenAI GPT-4.1-mini & embeddings  
 • SerpAPI + Brave web & news search  
-• X Posting API
+• X Posting API  
 
 ---
 
@@ -113,17 +113,17 @@ ai-x-auto-thread-agent/
 
 ## 🧪 Future Enhancements
 
-• Video and carousel support for X
-• Multi-platform cross-posting (LinkedIn + Threads + Reddit)
-• Engagement scoring feedback loop
-• Auto-respond via AI commenting agent
+• Video and carousel support for X  
+• Multi-platform cross-posting (LinkedIn + Threads + Reddit)  
+• Engagement scoring feedback loop  
+• Auto-respond via AI commenting agent  
 
 ---
 
 ## 🤝 Contributing
 
-Open to feature requests, prompts, and automation ideas.
-DM or open an issue if you're building something similar.
+Open to feature requests, prompts, and automation ideas.  
+DM or open an issue if you're building something similar.  
 
 ---
 
